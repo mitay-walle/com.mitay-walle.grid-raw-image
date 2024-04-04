@@ -1,0 +1,27 @@
+{
+  "name": "com.mitay-walle.grid-raw-image",
+  "version": "0.5.0",
+  "displayName": "UI Grid Raw Image",
+  "description": "Custom graphic for uGUI\n\nSingle-object/texture Grid image, excelent for tile-based inventory, with \n- extrude\n- skip cells\n- resize rectTransform to fit\n- valid raycasting for input",
+  "unity": "2018.4",
+    "keywords": [
+    "UI",
+    "Graphic",
+	"Geometry"
+  ],
+	"documentationUrl": "https://github.com/mitay-walle/Unity3d-UICircleSegmented//blob/main/README.md",
+	"licensesUrl": "https://github.com/mitay-walle/Unity3d-UICircleSegmented//blob/main/LICENSE.md",
+  "author": {
+    "name": "mitay-walle",
+    "email": "mitay-walle91@mail.ru",
+    "url": "https://github.com/mitay-walle"
+  },
+  "samples": [
+    {
+      "displayName": "Usage Examples",
+      "description": "Contains scene with UICircleSegmented with different setup",
+      "path": "Samples/Samples"
+    }
+  ],
+  "author": "mitay-walle <mitay-walle91@mail.ru> (https://github.com/mitay-walle)"
+}

@@ -1,0 +1,16 @@
+{
+    "name": "GridImage.Editor",
+    "rootNamespace": "mitaywalle.UI",
+    "references": ["GUID:a031b71facd1b09408bb384c06a860b6"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
