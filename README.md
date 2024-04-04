@@ -1,5 +1,5 @@
 # Unity3d UI Grid Raw Image
-Custom graphic for uGUI. Single-object/texture Grid image, excelent for tile-based inventory
+Custom graphic for uGUI. Single-object/texture Grid image, excelent for tile-based (tetris-like) inventory
 
 [Youtube usage video](https://youtu.be/E7Ouh1k3No0?si=mEKckcfdjrP_Yf0Z)
 
