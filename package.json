@@ -9,8 +9,8 @@
     "Graphic",
 	"Geometry"
   ],
-	"documentationUrl": "https://github.com/mitay-walle/Unity3d-UICircleSegmented//blob/main/README.md",
-	"licensesUrl": "https://github.com/mitay-walle/Unity3d-UICircleSegmented//blob/main/LICENSE.md",
+	"documentationUrl": "https://github.com/mitay-walle/com.mitay-walle.grid-raw-image//blob/main/README.md",
+	"licensesUrl": "https://github.com/mitay-walle/com.mitay-walle.grid-raw-image//blob/main/LICENSE.md",
   "author": {
     "name": "mitay-walle",
     "email": "mitay-walle91@mail.ru",
@@ -19,8 +19,8 @@
   "samples": [
     {
       "displayName": "Usage Examples",
-      "description": "Contains scene with UICircleSegmented with different setup",
-      "path": "Samples/Samples"
+      "description": "Contains scene with Grid Raw Image",
+      "path": "Samples~/Scenes"
     }
   ],
   "author": "mitay-walle <mitay-walle91@mail.ru> (https://github.com/mitay-walle)"
