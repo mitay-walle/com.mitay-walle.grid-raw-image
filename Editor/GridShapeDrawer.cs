@@ -17,20 +17,23 @@ namespace mitaywalle.UI.Packages.GridImage.Editor
 			EditorGUI.BeginChangeCheck();
 
 			BitArray256 bitArray = (BitArray256)prop.boxedValue;
-
+			var last = EditorGUIUtility.labelWidth;
+			EditorGUIUtility.labelWidth = 0;
 			for (int j = size.vector2IntValue.y - 1; j >= 0; j--)
 			{
 				GUILayout.BeginHorizontal();
-				GUILayout.FlexibleSpace();
+				//GUILayout.FlexibleSpace();
+
 				for (int i = 0; i < size.vector2IntValue.x; i++)
 				{
 					int index = j * size.vector2IntValue.x + i;
 					bool value = bitArray[(uint)index];
-					bitArray[(uint)index] = EditorGUILayout.ToggleLeft("", value, GUILayout.ExpandWidth(false),GUILayout.Width(75));
+					bitArray[(uint)index] = EditorGUILayout.Toggle(GUIContent.none, value, GUILayout.Width(20));
 				}
 				GUILayout.EndHorizontal();
 			}
 
+			EditorGUIUtility.labelWidth = last;
 			if (EditorGUI.EndChangeCheck())
 			{
 				foreach (Object targetObject in property.serializedObject.targetObjects)
