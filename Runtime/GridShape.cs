@@ -11,6 +11,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 	{
 		public static GridShape Rectangle2X2 = new(new Vector2Int(2, 2));
 		public static GridShape Default = Rectangle2X2;
+		static List<Vector2Int> _buffer = new();
 
 		/// <summary>
 		/// expected string format: <br/><br/>
@@ -81,10 +82,38 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			}
 
         #if UNITY_EDITOR
-			_bufferEditor = null;
 			_previewValues = null;
 			OnInspectorInit();
         #endif
+		}
+
+		public GridShape Extrude(int x = 1, int y = 1)
+		{
+			GridShape newShape = this;
+			GetValidPositions(_buffer);
+			foreach (Vector2Int point in _buffer)
+			{
+				Vector2Int p = point;
+				Vector2Int p2 = point;
+				for (int i = 0; i < x; i++)
+				{
+					p.x++;
+					p2.x--;
+					newShape[p] = true;
+					newShape[p2] = true;
+				}
+
+				p = point;
+				p2 = point;
+				for (int i = 0; i < y; i++)
+				{
+					p.y++;
+					p2.y--;
+					newShape[p] = true;
+					newShape[p2] = true;
+				}
+			}
+			return newShape;
 		}
 
 		public static bool operator ==(GridShape left, GridShape right) => left.Equals(right);
@@ -212,6 +241,11 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			get => Contains(x, y);
 			set => _bitArray[IndexFromPosition(x, y)] = value;
 		}
+		public bool this[uint i]
+		{
+			get => _bitArray[i];
+			set => _bitArray[i] = value;
+		}
 		public bool this[uint x, uint y]
 		{
 			get => Contains((int)x, (int)y);
@@ -221,16 +255,14 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
     #region Editor
 #if UNITY_EDITOR
 		(Vector2Int, uint)[,] _previewValues;
-		private List<Vector2Int> _bufferEditor;
 
 		public void OnDrawGizmos(Transform transform, Color color, bool wire = false, Vector2? cellSize = null, Vector3 offset = default)
 		{
-			_bufferEditor ??= new();
-			GetValidPositions(_bufferEditor);
+			GetValidPositions(_buffer);
 			Gizmos.color = color;
 			Gizmos.matrix = transform.localToWorldMatrix;
 			Vector3 size = cellSize.HasValue ? cellSize.Value : Vector2.one * .95f;
-			foreach (Vector2Int gridPosition in _bufferEditor)
+			foreach (Vector2Int gridPosition in _buffer)
 			{
 				Vector3 position = FromGridPosition(gridPosition);
 
