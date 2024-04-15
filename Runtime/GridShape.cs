@@ -81,7 +81,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			}
 
         #if UNITY_EDITOR
-			_buffer = null;
+			_bufferEditor = null;
 			_previewValues = null;
 			OnInspectorInit();
         #endif
@@ -98,7 +98,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 		public uint IndexFromPosition(int x, int y, bool invertY = false) => (uint)(InvertY(y, invertY) * _size.x + x);
 		private uint IndexFromPosition(uint x, uint y, bool invertY = false) => InvertY(y, invertY) * (uint)_size.x + x;
 		public uint IndexFromPosition(Vector2Int position, bool invertY = false) => InvertY(position.y, invertY) * (uint)_size.x + (uint)position.x;
-		private Vector2Int PositionFromIndex(uint index) => new(((int)(2 ^ index) / _size.x), (int)((2 ^ index) % _size.x));
+		private Vector2Int PositionFromIndex(uint index) => new((int)index % _size.x, (int)(index / _size.x));
 		private void SetDefault() => this = Default;
 
 		public bool Contains(int x, int y)
@@ -120,6 +120,30 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 		public Vector3 FromGridPosition(Vector2Int gridPosition, bool halfOffset = false)
 		{
 			return halfOffset ? GetOffsetTransformPositionOffset() + (Vector3)(Vector2)gridPosition : (Vector2)gridPosition;
+		}
+
+		public RectInt GetValidRect()
+		{
+			var rect = new RectInt();
+
+			Vector2Int min = new Vector2Int(int.MaxValue, int.MaxValue);
+			Vector2Int max = new Vector2Int(int.MinValue, int.MinValue);
+			bool foundAny = false;
+			for (uint i = 0; i < Length; i++)
+			{
+				if (_bitArray[i])
+				{
+					Vector2Int position = PositionFromIndex(i);
+					min = Vector2Int.Min(position, min);
+					max = Vector2Int.Max(position, max);
+					foundAny = true;
+				}
+			}
+
+			if (!foundAny) return default;
+			rect.min = min;
+			rect.max = max;
+			return rect;
 		}
 
 		public void GetValidPositions(List<Vector2Int> buffer, bool invertY = false)
@@ -197,23 +221,20 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
     #region Editor
 #if UNITY_EDITOR
 		(Vector2Int, uint)[,] _previewValues;
-		private List<Vector2Int> _buffer;
+		private List<Vector2Int> _bufferEditor;
 
-		public void OnDrawGizmos(Transform transform, Color color, bool wire = false, Vector2? cellSize = null, bool halfOffset = false)
+		public void OnDrawGizmos(Transform transform, Color color, bool wire = false, Vector2? cellSize = null, Vector3 offset = default)
 		{
-			_buffer ??= new();
-			GetValidPositions(_buffer);
+			_bufferEditor ??= new();
+			GetValidPositions(_bufferEditor);
 			Gizmos.color = color;
 			Gizmos.matrix = transform.localToWorldMatrix;
 			Vector3 size = cellSize.HasValue ? cellSize.Value : Vector2.one * .95f;
-			foreach (Vector2Int gridPosition in _buffer)
+			foreach (Vector2Int gridPosition in _bufferEditor)
 			{
 				Vector3 position = FromGridPosition(gridPosition);
 
-				if (halfOffset)
-				{
-					position += Vector3.one * .5f;
-				}
+				position += offset;
 				position *= (Vector2)size;
 				if (wire)
 				{
