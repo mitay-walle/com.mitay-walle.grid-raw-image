@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +8,9 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 	public enum GridRawImageResize
 	{
 		None,
-		Size,
-		ValidPositions,
+		Resize,
+		ResizeValidPositionsOnly,
+		RectSizeToCount,
 	}
 
 	[RequireComponent(typeof(CanvasRenderer))]
@@ -20,7 +22,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 		static Vector2 UV3 = new Vector2(1, 0);
 
 		public Texture texture;
-		[SerializeField] GridRawImageResize _resize = GridRawImageResize.ValidPositions;
+		[SerializeField] GridRawImageResize _resize = GridRawImageResize.ResizeValidPositionsOnly;
 		[SerializeField] Vector2 _cellSize = Vector2.one * 100;
 		[SerializeField] float _extrude;
 		[SerializeField] GridShape _shape = GridShape.Default;
@@ -44,6 +46,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 					{
 						return material.mainTexture;
 					}
+
 					return s_WhiteTexture;
 				}
 
@@ -62,30 +65,49 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			vh.Clear();
 			color32 = color;
 
-			_shape.GetValidPositions(_buffer);
 			Vector2 offset = rectTransform.pivot * _cellSize;
 			switch (_resize)
 			{
-				case GridRawImageResize.Size:
-					{
-						offset *= -_shape.Size;
-						break;
-					}
-				case GridRawImageResize.ValidPositions:
-					{
-						_validRect = _shape.GetValidRect();
-						offset *= -_validRect.min;
-						//offset = (_validRect.min - _validRect.size) * _cellSize;
-						Debug.Log($"{_shape.Size} {_validRect.size} {_validRect.min}");
-						break;
-					}
+				case GridRawImageResize.Resize:
+				{
+					offset *= -_shape.Size;
+					break;
+				}
+
+				case GridRawImageResize.ResizeValidPositionsOnly:
+				{
+					_validRect = _shape.GetValidRect();
+					offset *= -_validRect.min;
+
+					//offset = (_validRect.min - _validRect.size) * _cellSize;
+					Debug.Log($"{_shape.Size} {_validRect.size} {_validRect.min}");
+					break;
+				}
+
 				case GridRawImageResize.None:
+				{
+					offset *= -_shape.Size;
+					break;
+				}
+
+				case GridRawImageResize.RectSizeToCount:
+				{
+					Vector2 newSize = rectTransform.rect.size / _cellSize;
+					Vector2Int newSizeInt = Vector2Int.RoundToInt(newSize);
+					if (newSizeInt != _shape.Size)
 					{
-						offset *= -_shape.Size;
-						break;
+						_shape.GetValidPositions(_buffer, invertValid: true);
+						_shape = new GridShape(newSizeInt, _buffer);
 					}
+
+					break;
+				}
+
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 
+			_shape.GetValidPositions(_buffer);
 			if (_buffer.Count > 0)
 			{
 				for (int i = 0; i < _buffer.Count; i++)
@@ -120,6 +142,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			_shape.GetValidPositions(_buffer);
 
 			if (_buffer.Count == 0) return false;
+
 			for (int i = 0; i < _buffer.Count; i++)
 			{
 				Vector2 p = _buffer[i] * _cellSize;
@@ -131,6 +154,7 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 					return true;
 				}
 			}
+
 			return false;
 		}
 
@@ -146,17 +170,18 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 
 			switch (_resize)
 			{
-				case GridRawImageResize.Size:
-					{
-						rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _shape.Size.x * _cellSize.x);
-						break;
-					}
-				case GridRawImageResize.ValidPositions:
-					{
-						_validRect = _shape.GetValidRect();
-						rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (_validRect.size.x + 1) * _cellSize.x);
-						break;
-					}
+				case GridRawImageResize.Resize:
+				{
+					rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _shape.Size.x * _cellSize.x);
+					break;
+				}
+
+				case GridRawImageResize.ResizeValidPositionsOnly:
+				{
+					_validRect = _shape.GetValidRect();
+					rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (_validRect.size.x + 1) * _cellSize.x);
+					break;
+				}
 			}
 		}
 
@@ -170,17 +195,18 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 
 			switch (_resize)
 			{
-				case GridRawImageResize.Size:
-					{
-						rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _shape.Size.y * _cellSize.y);
-						break;
-					}
-				case GridRawImageResize.ValidPositions:
-					{
-						_validRect = _shape.GetValidRect();
-						rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (_validRect.size.y + 1) * _cellSize.y);
-						break;
-					}
+				case GridRawImageResize.Resize:
+				{
+					rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _shape.Size.y * _cellSize.y);
+					break;
+				}
+
+				case GridRawImageResize.ResizeValidPositionsOnly:
+				{
+					_validRect = _shape.GetValidRect();
+					rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (_validRect.size.y + 1) * _cellSize.y);
+					break;
+				}
 			}
 		}
 
