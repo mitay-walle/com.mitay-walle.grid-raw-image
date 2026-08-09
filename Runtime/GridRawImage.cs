@@ -78,9 +78,6 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 				{
 					_validRect = _shape.GetValidRect();
 					offset *= -_validRect.min;
-
-					//offset = (_validRect.min - _validRect.size) * _cellSize;
-					Debug.Log($"{_shape.Size} {_validRect.size} {_validRect.min}");
 					break;
 				}
 
