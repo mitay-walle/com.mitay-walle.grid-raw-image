@@ -175,14 +175,15 @@ namespace mitaywalle.UI.Packages.GridImage.Runtime
 			return rect;
 		}
 
-		public void GetValidPositions(List<Vector2Int> buffer, bool invertY = false)
+		public void GetValidPositions(List<Vector2Int> buffer, bool invertY = false, bool invertValid = false)
 		{
 			buffer.Clear();
+		
 			for (uint y = 0; y < _size.y; y++)
 			{
 				for (uint x = 0; x < _size.x; x++)
 				{
-					if (_bitArray[IndexFromPosition(x, y)])
+					if (_bitArray[IndexFromPosition(x, y)] != invertValid)
 					{
 						buffer.Add(new Vector2Int((int)x, (int)InvertY(y, invertY)));
 					}
